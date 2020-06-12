@@ -10,18 +10,12 @@ class Background {
     }
 
     draw() {
-        this.ctx.drawImage(this.image, this.posX, this.posY, this.w, this.h)
-        /*image.onload = function(){
-            scaleToFit(this);
-        }
-        function scaleToFit(img){
-            // get the scale
-            var scale = Math.min(canvas.width / img.width, canvas.height / img.height);
-            // get the top left position of the image
-            var x = (canvas.width / 2) - (img.width / 2) * scale;
-            var y = (canvas.height / 2) - (img.height / 2) * scale;
-            ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-        }*/
+      this.ctx.drawImage(this.image, this.posX, this.posY, this.w, this.h)
+      this.ctx.drawImage(this.image, this.posX + this.w, this.posY, this.w, this.h)
+    }
+
+    move() {
+        
     }
 }
 

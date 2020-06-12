@@ -13,8 +13,8 @@ const Game = {
     horse: undefined,
     background: undefined,
     canvasSize: {
-        w: 1500,
-        h: 844
+        w: undefined,
+        h: undefined
     },
     keys: {
         SPACE: 32,
@@ -22,8 +22,9 @@ const Game = {
     },
 
     init() {
-        console.log(this.canvasDom)
         this.canvasDom = document.getElementById("myCanvas")
+        this.canvasSize.w = this.canvasDom.getAttribute('width')
+        this.canvasSize.h = this.canvasDom.getAttribute('height')
         this.ctx = this.canvasDom.getContext("2d")
         this.start()
     },
