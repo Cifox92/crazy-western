@@ -1,22 +1,31 @@
 class Background {
-    constructor(ctx, w, h) {
-        this.ctx = ctx
-        this.w = w
-        this.h = h
-        this.posX = 0
-        this.posY = 0
-        this.image = new Image()
-        this.image.src = "img/Desert.png"
+  constructor(ctx, w, h, imgSource) {
+    this.ctx = ctx
+    this.w = w
+    this.h = h
+    this.image = new Image()
+    this.image.src = imgSource
+    this.posX = 0
+    this.posY = 0
+    this.velX = 3
+    this.canvasSize = {
+      w: w,
+      h: h
     }
+  }
 
-    draw() {
-      this.ctx.drawImage(this.image, this.posX, this.posY, this.w, this.h)
-      this.ctx.drawImage(this.image, this.posX + this.w, this.posY, this.w, this.h)
-    }
+  draw() {
+    this.ctx.drawImage(this.image, this.posX, this.posY, this.canvasSize.w, this.canvasSize.h)
+    this.ctx.drawImage(this.image, this.posX + this.canvasSize.w, this.posY, this.canvasSize.w, this.canvasSize.h)
+    this.move()
+  }
 
-    move() {
-        
+  move() {
+    if(this.posX <= -this.w) {
+      this.posX = 0
     }
+    this.posX -= this.velX
+  }
 }
 
 
