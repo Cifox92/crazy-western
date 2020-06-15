@@ -1,9 +1,8 @@
 class Bullets {
-    constructor(ctx, horsePositionX, horsePositionY, horsePositionYO, horseWidth, horseHeight) {
+    constructor(ctx, horsePositionX, horsePositionY, horseWidth, horseHeight) {
         this.ctx = ctx
         this.posX = horsePositionX + horseWidth
         this.posY = horsePositionY + horseHeight / 2
-        this.horsePositionYO = horsePositionYO
         this.horseHeight = horseHeight
 
         this.bulletWidth = 15
@@ -22,6 +21,5 @@ class Bullets {
 
     move() {
         this.posX += this.velX
-        //console.log(this.posX)
     }
 }

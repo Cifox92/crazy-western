@@ -1,6 +1,5 @@
 class Horse {
     constructor(ctx, w, h, keys) {
-        
         this.ctx = ctx
 
         this.canvasSize = {
@@ -17,8 +16,9 @@ class Horse {
         this.image.framesIndex = ""
 
         this.posX = 50
-        this.posY = this.canvasSize.h - this.horseHeight - 230
-        this.posY0 = this.posY
+        this.posY0 = this.canvasSize.h - this.horseHeight - 100
+        this.posY = this.posY0
+        this.posY1 = this.posY0
 
         this.velY = 2
         this.gravity = 0.2
@@ -62,7 +62,7 @@ class Horse {
                     break;
                 
                 case this.keys.SPACE:
-                    if (this.posY >= this.posY0) {
+                    if (this.posY == this.posY0) {
                         this.jump()
                     }
                     break;
@@ -80,7 +80,7 @@ class Horse {
     }
 
     shoot() {
-        this.bullets.push(new Bullets(this.ctx, this.posX, this.posY, this.posY0, this.horseWidth, this.horseHeight))
+        this.bullets.push(new Bullets(this.ctx, this.posX, this.posY, this.horseWidth, this.horseHeight))
     }
 
     clearBullets() {

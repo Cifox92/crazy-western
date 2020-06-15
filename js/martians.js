@@ -8,7 +8,7 @@ class Martian {
         this.martianHeight = 150
         this.martianWidth = 100
         this.posX = w
-        this.posY = this.canvasSize.h - this.martianHeight - 230
+        this.posY = this.canvasSize.h - this.martianHeight - 100
 
         this.velX = 5
 
@@ -16,11 +16,33 @@ class Martian {
 
         this.image = new Image()
         this.image.src = "img/alien.png"
+        this.image.frames = 12
+        this.image.framesIndex = 0
     }
 
-    draw() {
-        this.ctx.drawImage(this.image, this.posX, this.posY, this.martianWidth, this.martianHeight)
+    draw(framescounter) {
+        this.ctx.drawImage(this.image, 
+        this.image.framesIndex * Math.floor(this.image.width / this.image.frames),
+        0,
+        Math.floor(this.image.width / this.image.frames),
+        this.image.height,
+        this.posX,
+        this.posY,
+        this.martianWidth,
+        this.martianHeight)
+
+        this.animate(framescounter)
+        console.log(this.image.framesIndex)
         this.move()
+    }
+
+    animate(framescounter) {
+        if(framescounter % 5 == 0) {
+            this.image.framesIndex++
+        }
+        if(this.image.framesIndex > this.image.frames -1) {
+            this.image.framesIndex = 0
+        }
     }
 
     move() {
