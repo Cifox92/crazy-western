@@ -1,9 +1,9 @@
 class Bullets {
-    constructor(ctx, horsePositionX, horsePositionY, horseWidth, horseHeight) {
+    constructor(ctx, playerPositionX, playerPositionY, playerWidth, playerHeight) {
         this.ctx = ctx
-        this.posX = horsePositionX + horseWidth
-        this.posY = horsePositionY + horseHeight / 2
-        this.horseHeight = horseHeight
+        this.posX = playerPositionX + playerWidth
+        this.posY = playerPositionY + playerHeight / 1.75
+        this.playerHeight = playerHeight
 
         this.bulletWidth = 15
         this.bulletHeight = 13

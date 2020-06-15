@@ -4,7 +4,7 @@ class Platforms {
         this.platformWidth = 100 + Math.random() * 100
         this.platformHeight = 50
         this.posX = w
-        this.posY = 400
+        this.posY = 350
         this.velX = 3
 
         this.image = new Image()

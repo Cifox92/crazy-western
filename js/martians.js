@@ -32,7 +32,6 @@ class Martian {
         this.martianHeight)
 
         this.animate(framescounter)
-        console.log(this.image.framesIndex)
         this.move()
     }
 
