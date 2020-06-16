@@ -7,7 +7,7 @@ class Background {
     this.image.src = imgSource
     this.posX = 0
     this.posY = 0
-    this.velX = 3
+    this.velX = 2
     this.canvasSize = {
       w: w,
       h: h

@@ -5,14 +5,17 @@ class FinalBoss {
             w: w,
             h: h
         }
-        this.finalBossHeight = 300
-        this.finalBossWidth = 300
+        this.finalBossHeight = 500
+        this.finalBossWidth = 500
         this.posX = w
-        this.posY = this.canvasSize.h - this.finalBossHeight - 100
+        this.posY = this.canvasSize.h - this.finalBossHeight - 80
 
-        this.velX = 1
-
+        this.reloadVel = -10
+        this.velX = 4
+        
         this.finalBossLifes = 50
+
+        this.lasers = []
 
         this.image = new Image()
         this.image.src = "img/finalboss.png"
@@ -33,6 +36,11 @@ class FinalBoss {
 
         this.animate(framescounter)
         this.move()
+        this.shoot(framescounter)
+        this.lasers.forEach(laser => laser.draw())
+        this.clearLasers()
+
+        console.log(this.lasers)
     }
 
     animate(framescounter) {
@@ -46,5 +54,19 @@ class FinalBoss {
 
     move() {
         this.posX -= this.velX
+
+        if(this.posX > 1500 - this.finalBossWidth){
+            this.velX = 5
+        }
+    }
+
+    shoot(framescounter) {
+        if(framescounter % 60 === 0) {
+            this.lasers.push(new Laser(this.ctx, this.posX, this.posY, this.finalBossWidth, this.finalBossHeight))
+        }
+    }
+
+    clearLasers() {
+        this.lasers = this.lasers.filter(laser => laser.posY < 550 + laser.laserHeight)
     }
 }

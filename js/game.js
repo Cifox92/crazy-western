@@ -9,6 +9,9 @@ const Game = {
     frames: 0,
     FPS: 60,
     music: new Audio("music/la_muerte_tenia_un_precio.mp3"),
+    score: 0,
+    coins: 0,
+    martiansKilled: 0,
     obstacles: [],
     martians: [],
     platforms: [],
@@ -22,7 +25,7 @@ const Game = {
     },
     keys: {
         SPACE: 32,
-        ALT: 18,
+        B: 66,
         LEFT: 37,
         RIGHT: 39
     },
@@ -42,21 +45,22 @@ const Game = {
     },
 
     start() {
-
         this.reset()
 
         this.interval = setInterval(() => {
             this.clear()
 
+            this.gameOver()
+
             this.generateElem()
             this.drawAll()
             this.clearElem()
 
-            this.frames > 6000 ? this.frames = 0 : this.frames++
+            this.frames++
 
-            this.isCollisionObs()
-            this.isCollisionPlatform()
-            this.hitBullet()
+            this.frames > 500 ? this.finalBoss.draw(this.frames) : null
+           
+            this.collisionAll()
             
         }, 1000 / this.FPS);
     },
@@ -69,6 +73,10 @@ const Game = {
         this.platforms = []
         this.martians= []
         this.babies = []
+        this.frames = 0
+        this.score = 0
+        this.coins = 0
+        this.martiansKilled = 0
     },
 
     drawAll() {
@@ -77,8 +85,23 @@ const Game = {
         //this.obstacles.forEach(obs => obs.draw())
         this.platforms.forEach(plat => plat.draw())
         this.babies.forEach(bab => bab.draw())
-        this.martians.forEach(mar => mar.draw(this.frames))
-        this.finalBoss.draw(this.frames)
+        //this.martians.forEach(mar => mar.draw(this.frames))
+
+        this.ctx.fillStyle = 'white'
+        this.ctx.font = '25px sans-serif'
+        this.ctx.fillText(`Lifes: ${this.player.playerLifes}`, this.canvasSize.w - 690, 35)
+        this.ctx.fillText(`Score: ${this.score}`, this.canvasSize.w - 545, 35)
+        this.ctx.fillText(`Coins: ${this.coins}`, this.canvasSize.w - 390, 35)
+        this.ctx.fillText(`Martians killed: ${this.martiansKilled}`, this.canvasSize.w - 240, 35)
+    },
+
+    collisionAll() {
+        this.isCollisionObs()
+        this.isCollisionPlatform()
+        this.isCollisionBaby()
+        this.isCollisionMartian()
+        this.isCollisionFB()
+        this.hitBullet()
     },
 
     clear() {
@@ -86,7 +109,7 @@ const Game = {
     },
 
     generateElem() {
-        if(this.frames % Math.floor(200 + (Math.random() * 400)) === 0) {
+        if((this.frames % Math.floor(200 + (Math.random() * 400)) === 0) && (this.frames < 500)) {
             this.obstacles.push(new Obstacle(this.ctx, this.canvasSize.w, this.player.posY1, this.player.playerHeight))
         }
 
@@ -94,21 +117,20 @@ const Game = {
             this.platforms.push(new Platforms(this.ctx, this.canvasSize.w))
         }
 
-        if(this.frames % Math.floor(200 + (Math.random() * 400)) === 0) {
+        if((this.frames % Math.floor(200 + (Math.random() * 400)) === 0) && (this.frames < 500)) {
             this.martians.push(new Martian(this.ctx, this.canvasSize.w, this.canvasSize.h))
         }
 
         if(this.frames % Math.floor(200 + (Math.random() * 400)) === 0) {
             this.babies.push(new Babies(this.ctx, this.canvasSize.w, this.canvasSize.h))
         }
-
     },
 
     clearElem() {
         this.obstacles = this.obstacles.filter(obs => obs.posX >= - obs.obstacleWidth)
         this.martians = this.martians.filter(mar => mar.posX >= - mar.martianWidth)
         this.platforms = this.platforms.filter(plat => plat.posX >= - plat.platformWidth)
-        this.babies = this.babies.filter(bab => bab.posY == bab.canvasSize.h)
+        this.babies = this.babies.filter(bab => bab.posY < this.player.posY1 + bab.babyHeight + 20)
     },
 
     isCollisionObs() {
@@ -117,19 +139,59 @@ const Game = {
                 this.player.posX + this.player.playerWidth > obs.posX + 50 && //colisión izda
                 this.player.posY < obs.posY + obs.obstacleHeight && //colision abajo
                 this.player.playerHeight + this.player.posY > obs.posY + 70) { //colision arriba
-                alert("Game Over")
+
+                this.player.playerLifes = 0
             }
         })
     },
 
     isCollisionBaby() {
-        
+        this.babies.some(bab => {
+            if (this.player.posX < bab.posX + bab.babyWidth - 50 && //colisión derecha
+                this.player.posX + this.player.playerWidth > bab.posX + 50 && //colisión izda
+                this.player.posY < bab.posY + bab.babyHeight - 70 && //colision abajo
+                this.player.playerHeight + this.player.posY > bab.posY + 30) { //colision arriba
+                
+                let numberOfBaby = this.babies.indexOf(bab)
+                this.babies.splice(numberOfBaby, 1)
+                this.score += 20
+                this.coins += 20
+                this.addLifes()
+            }
+        })
+    },
+
+    isCollisionMartian() {
+        this.martians.some(mar => {
+            if (this.player.posX < mar.posX + mar.martianWidth - 50 && //colisión derecha
+                this.player.posX + this.player.playerWidth > mar.posX + 50 && //colisión izda
+                this.player.posY < mar.posY + mar.martianHeight - 70 && //colision abajo
+                this.player.playerHeight + this.player.posY > mar.posY + 30) { //colision arriba
+
+                let numberOfMartian = this.martians.indexOf(mar)
+                this.martians.splice(numberOfMartian, 1)
+                this.player.playerLifes--
+            }
+        })
+
+    },
+
+    isCollisionFB() {
+        if (this.player.posX < this.finalBoss.posX + this.finalBoss.finalBossWidth - 50 &&
+            this.player.posX + this.player.playerWidth > this.finalBoss.posX + 50 && 
+            this.player.posY < this.finalBoss.posY + this.finalBoss.finalBossHeight - 70 && 
+            this.player.playerHeight + this.player.posY > this.finalBoss.posY + 30) { 
+
+            this.player.playerLifes -= 2
+
+            this.finalBoss.velX = this.finalBoss.reloadVel
+        }
     },
 
     isCollisionPlatform() {
         this.platforms.some(plat => {
-            if(this.player.posX < plat.posX + plat.platformWidth -50 && //colisión por la derecha
-                this.player.posX + this.player.playerWidth > plat.posX && //colisión por la izda
+            if(this.player.posX < plat.posX + plat.platformWidth -50 && //colisión derecha
+                this.player.posX + this.player.playerWidth > plat.posX && //colisión izda
                 this.player.posY < plat.posY + plat.platformHeight -50 && //colision abajo
                 this.player.playerHeight + this.player.posY > plat.posY + 20) {
 
@@ -157,18 +219,55 @@ const Game = {
                 }
             })
         })
+
+        this.player.bullets.some(bul => {
+            if (bul.posX + bul.bulletWidth >= this.finalBoss.posX + 25 && 
+                bul.bulletHeight + bul.posY > this.finalBoss.posY + 70 &&
+                bul.posX < this.finalBoss.posX + this.finalBoss.finalBossWidth - 25 &&
+                bul.posY < this.finalBoss.posY + this.finalBoss.finalBossHeight) {
+
+                let numberOfBullet = this.player.bullets.indexOf(bul)
+                this.player.bullets.splice(numberOfBullet, 1)
+                this.finalBoss.finalBossLifes--
+                
+                this.killFinalBoss()
+            }
+        })
+    },
+
+    killFinalBoss() {
+        if(this.finalBoss.finalBossLifes === 0) {
+            this.score += 200
+            this.coins += 200
+            this.martiansKilled++
+            this.finalBoss.posX = 0 - this.finalBoss.finalBossWidth
+            this.addLifes()
+        }
     },
 
     killMartian() {
         this.martians.forEach(mar => {
             if(mar.martianLifes === 0) {
+                this.score += 5
+                this.coins += 5
+                this.martiansKilled++
                 let numberOfMartian = this.martians.indexOf(mar)
                 this.martians.splice(numberOfMartian, 1)
+                this.addLifes()
             }
         })
     },
 
-    gameOver() {
+    addLifes() {
+        if(this.coins >= 150) {
+            this.coins -= 150
+            this.player.playerLifes++
+        }
+    },
 
+    gameOver() {
+        if(this.player.playerLifes <= 0) {
+            clearInterval(this.interval)
+        }
     },
 }

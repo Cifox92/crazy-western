@@ -15,6 +15,9 @@ class Player {
         this.image.frames = 14
         this.image.framesIndex = 0
 
+
+        this.sound = new Audio("music/shoot2.mp3")
+
         this.posX = 50
         this.posY0 = this.canvasSize.h - this.playerHeight - 100
         this.posY = this.posY0
@@ -27,7 +30,7 @@ class Player {
 
         this.bullets = []
 
-        this.playerLifes = 3
+        this.playerLifes = 5
         
         this.setListeners()
     }
@@ -73,11 +76,15 @@ class Player {
         document.addEventListener("keydown", e => {
             switch(e.keyCode) {
                 case this.keys.LEFT:
-                    this.posX -= 10
+                    if(this.posX >= 1) {
+                        this.posX -= 10
+                    }
                     break;
 
                 case this.keys.RIGHT:
-                    this.posX += 10
+                    if(this.posX <= this.canvasSize.w - this  .playerWidth) {
+                        this.posX += 10
+                    }
                     break;
                 
                 case this.keys.SPACE:
@@ -86,8 +93,9 @@ class Player {
                     }
                     break;
 
-                case this.keys.ALT:
+                case this.keys.B:
                     this.shoot()
+                    this.sound.play()
                     break;
             }
         })

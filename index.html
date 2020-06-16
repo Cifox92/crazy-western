@@ -4,16 +4,27 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Crazy Western!</title>
+        <link href="https://fonts.googleapis.com/css2?family=Sancreek&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="styles/style.css">
     </head>
     <body>
-        <h1>Crazy Western</h1>
-        <p>Jump with space bar. Shoot with alt.</p>
-        <p>Dont get caught by the mice troops. Kill all the ones you can.</p>
-        <p>GO!</p>
-        <button id="start-game">Start Game</button>
+        <div id="gameArea">
+            <h1 class = "h1Game">Crazy Western!</h1>
+            <canvas id="myCanvas"></canvas>
+        </div>
 
-        <canvas id="myCanvas"></canvas>
+        <div id = "intro">
+            <h1 class="h1Intro">Crazy Western!</h1>
+            <p>Welcome to the new Western. A really new one. Really.</p>
+            <p>Don't get caught by the aliens. Kill all the ones you can & save the babies they have stolen.</p>
+            <p>Move with left & right buttons.</p>
+            <p> Jump with space bar.</p>
+            <p>Shoot with B.</p>
+            <p>GO!</p>
+            <div id = "start-game">
+                <h2>Start!</h2>
+            </div>
+        </div>
 
         <script type="text/javascript" src="js/bullets.js"></script>
         <script type="text/javascript" src="js/martians.js"></script>
@@ -22,6 +33,7 @@
         <script type="text/javascript" src="js/player.js"></script>
         <script type="text/javascript" src="js/background.js"></script>
         <script type="text/javascript" src="js/babies.js"></script>
+        <script type="text/javascript" src="js/lasers.js"></script>
         <script type="text/javascript" src="js/finalBoss.js"></script>
         <script type="text/javascript" src="js/game.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
