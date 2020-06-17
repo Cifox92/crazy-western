@@ -1,7 +1,7 @@
 class Laser {
-    constructor(ctx, fBPositionX, fbPositionY, fbWidth, fbHeight) {
+    constructor(ctx, fbPositionX, fbHeight) {
         this.ctx = ctx
-        this.posX = fBPositionX + 140
+        this.posX = fbPositionX + 140
         this.posY = 420 
         this.fbHeight = fbHeight
 

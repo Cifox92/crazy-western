@@ -13,42 +13,71 @@ class FinalBoss {
         this.reloadVel = -10
         this.velX = 4
         
-        this.finalBossLifes = 50
+        this.finalBossLifes = 20
 
         this.lasers = []
 
         this.sound = new Audio("music/laser.mp3")
 
-        this.image = new Image()
-        this.image.src = "img/finalboss.png"
-        this.image.frames = 17
-        this.image.framesIndex = 0
+        this.imageWalk = new Image()
+        this.imageWalk.src = "img/finalboss.png"
+        this.imageWalk.frames = 17
+        this.imageWalk.framesIndex = 0
+
+        this.imageDead = new Image()
+        this.imageDead.src = "img/finalbossdead.png"
+        this.imageDead.frames = 13
+        this.imageDead.framesIndex = 0
     }
 
-    draw(framescounter) {
-        this.ctx.drawImage(this.image, 
-        this.image.framesIndex * Math.floor(this.image.width / this.image.frames),
+    drawSelector(framescounter) {
+        this.finalBossLifes <= 0 ? this.drawDead(framescounter) : this.drawWalk(framescounter)
+    }
+
+    drawWalk(framescounter) {
+        this.ctx.drawImage(this.imageWalk, 
+        this.imageWalk.framesIndex * Math.floor(this.imageWalk.width / this.imageWalk.frames),
         0,
-        Math.floor(this.image.width / this.image.frames),
-        this.image.height,
+        Math.floor(this.imageWalk.width / this.imageWalk.frames),
+        this.imageWalk.height,
         this.posX,
         this.posY,
         this.finalBossWidth,
         this.finalBossHeight)
 
-        this.animate(framescounter)
+        this.animateWalk(framescounter)
         this.move()
         this.shoot(framescounter)
         this.lasers.forEach(laser => laser.draw())
         this.clearLasers()
     }
 
-    animate(framescounter) {
+    drawDead(framescounter) {
+        this.ctx.drawImage(this.imageDead, 
+        this.imageDead.framesIndex * Math.floor(this.imageDead.width / this.imageDead.frames),
+        0,
+        Math.floor(this.imageDead.width / this.imageDead.frames),
+        this.imageDead.height,
+        this.posX,
+        this.posY,
+        this.finalBossWidth,
+        this.finalBossHeight)
+    
+        this.animateDead(framescounter)
+    }
+
+    animateWalk(framescounter) {
         if(framescounter % 5 == 0) {
-            this.image.framesIndex++
+            this.imageWalk.framesIndex++
         }
-        if(this.image.framesIndex > this.image.frames -1) {
-            this.image.framesIndex = 0
+        if(this.imageWalk.framesIndex > this.imageWalk.frames -1) {
+            this.imageWalk.framesIndex = 0
+        }
+    }
+
+    animateDead(framescounter) {
+        if(framescounter % 5 == 0) {
+            this.imageDead.framesIndex++
         }
     }
 
@@ -61,10 +90,11 @@ class FinalBoss {
     }
 
     shoot(framescounter) {
-        if(framescounter % 60 === 0) {
-            this.lasers.push(new Laser(this.ctx, this.posX, this.posY, this.finalBossWidth, this.finalBossHeight))
+        if(framescounter % 60 === 0 && this.finalBossLifes >= 1) {
+            this.lasers.push(new Laser(this.ctx, this.posX, this.finalBossHeight))
+            this.sound.play()
         }
-        this.sound.play()
+        
     }
 
     clearLasers() {

@@ -1,5 +1,5 @@
 class Player {
-    constructor(ctx, w, h, keys) {
+    constructor(ctx, w, h, keys, frames) {
         this.ctx = ctx
 
         this.canvasSize = {
@@ -15,8 +15,8 @@ class Player {
         this.image.frames = 14
         this.image.framesIndex = 0
 
-
-        this.sound = new Audio("music/shoot2.mp3")
+        this.soundShoot = new Audio("music/shoot2.mp3")
+        this.soundReload = new Audio("music/reload.mp3")
 
         this.posX = 50
         this.posY0 = this.canvasSize.h - this.playerHeight - 100
@@ -29,6 +29,8 @@ class Player {
         this.keys = keys
 
         this.bullets = []
+        this.revolverCharger = 6
+        this.frames = frames
 
         this.playerLifes = 20
         
@@ -82,7 +84,7 @@ class Player {
                     break;
 
                 case this.keys.RIGHT:
-                    if(this.posX <= this.canvasSize.w - this  .playerWidth) {
+                    if(this.posX <= this.canvasSize.w - this.playerWidth) {
                         this.posX += 10
                     }
                     break;
@@ -95,7 +97,10 @@ class Player {
 
                 case this.keys.B:
                     this.shoot()
-                    this.sound.play()
+                    break;
+                
+                case this.keys.N:
+                    this.reload()
                     break;
             }
         })
@@ -107,7 +112,16 @@ class Player {
     }
 
     shoot() {
-        this.bullets.push(new Bullets(this.ctx, this.posX, this.posY, this.playerWidth, this.playerHeight))
+        if(this.revolverCharger > 0) {
+            this.bullets.push(new Bullets(this.ctx, this.posX, this.posY, this.playerWidth, this.playerHeight))
+            this.soundShoot.play()
+            this.revolverCharger--
+        }
+    }
+
+    reload() {
+        this.revolverCharger = 6
+        this.soundReload.play()
     }
 
     clearBullets() {

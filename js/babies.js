@@ -8,7 +8,7 @@ class Babies {
 
         this.babyHeight = 70
         this.babyWidth = 70
-        this.posX = 750 + Math.floor((Math.random() * 750))
+        this.posX = 400 + Math.floor((Math.random() * 750))
         this.posY = 0 - this.babyHeight
         this.velY = 3
 

@@ -7,6 +7,7 @@ const Game = {
     canvasDom: undefined,
     ctx: undefined,
     frames: 0,
+    framesFinal: 1000,
     FPS: 60,
     music: new Audio("music/la_muerte_tenia_un_precio.mp3"),
     score: 0,
@@ -26,6 +27,7 @@ const Game = {
     keys: {
         SPACE: 32,
         B: 66,
+        N: 78,
         LEFT: 37,
         RIGHT: 39,
         ENTER: 13
@@ -57,18 +59,18 @@ const Game = {
 
             this.frames++
 
-            this.frames > 1000 ? this.finalBoss.draw(this.frames) : null
+            this.frames > this.framesFinal ? this.finalBoss.drawSelector(this.frames) : null
            
             this.collisionAll()
 
-            this.gameOver()
+            this.gameOver()            
             
         }, 1000 / this.FPS);
     },
 
     reset() {
         this.background = new Background(this.ctx, this.canvasSize.w, this.canvasSize.h, "img/Mars2.jpg")
-        this.player = new Player(this.ctx, this.canvasSize.w, this.canvasSize.h, this.keys)
+        this.player = new Player(this.ctx, this.canvasSize.w, this.canvasSize.h, this.keys, this.frames)
         this.finalBoss = new FinalBoss(this.ctx, this.canvasSize.w, this.canvasSize.h)
         this.obstacles = []
         this.platforms = []
@@ -83,10 +85,10 @@ const Game = {
     drawAll() {
         this.background.draw()
         this.player.draw(this.frames)
-        this.obstacles.forEach(obs => obs.draw())
+        //this.obstacles.forEach(obs => obs.draw())
         this.platforms.forEach(plat => plat.draw())
         this.babies.forEach(bab => bab.draw())
-        this.martians.forEach(mar => mar.draw(this.frames))
+        //this.martians.forEach(mar => mar.draw(this.frames))
 
         this.ctx.fillStyle = 'white'
         this.ctx.font = '25px sans-serif'
@@ -94,6 +96,7 @@ const Game = {
         this.ctx.fillText(`Score: ${this.score}`, this.canvasSize.w - 545, 35)
         this.ctx.fillText(`Coins: ${this.coins}`, this.canvasSize.w - 390, 35)
         this.ctx.fillText(`Martians killed: ${this.martiansKilled}`, this.canvasSize.w - 240, 35)
+        this.ctx.fillText(`Bullets: ${this.player.revolverCharger}`, 35, 35)
     },
 
     collisionAll() {
@@ -110,25 +113,7 @@ const Game = {
     },
 
     generateElem() {
-        /*if((this.frames % Math.floor(200 + (Math.random() * 400)) === 0) && (this.frames < 1000)) {
-            this.obstacles.push(new Obstacle(this.ctx, this.canvasSize.w, this.player.posY1, this.player.playerHeight))
-        }
-
-        if(this.frames % Math.floor(200 + (Math.random() * 400)) === 0) {
-            this.platforms.push(new Platforms(this.ctx, this.canvasSize.w))
-        }
-
-        if((this.frames % Math.floor(200 + (Math.random() * 400)) === 0) && (this.frames < 1000)) {
-            this.martians.push(new Martian(this.ctx, this.canvasSize.w, this.canvasSize.h))
-        }
-
-        if(this.frames % Math.floor(200 + (Math.random() * 400)) === 0) {
-            this.babies.push(new Babies(this.ctx, this.canvasSize.w, this.canvasSize.h))
-        }*/
-
-        let random = Math.floor((Math.random() * 600) + 200)
-
-        if((this.frames % 100 === 0) && (this.frames % random === 0) && (this.frames < 1000)) {
+        if((this.frames % 100 === 0) && (this.frames % 7 === 0) && (this.frames < this.framesFinal)) {
             this.obstacles.push(new Obstacle(this.ctx, this.canvasSize.w, this.player.posY1, this.player.playerHeight))
         }
 
@@ -136,11 +121,11 @@ const Game = {
             this.platforms.push(new Platforms(this.ctx, this.canvasSize.w))
         }
 
-        if((this.frames % 75 === 0) && (this.frames % 2 === 0)&& (this.frames < 1000)) {
+        if((this.frames % 50 === 0) && (this.frames % 3 === 0) && (this.frames < this.framesFinal)) {
             this.martians.push(new Martian(this.ctx, this.canvasSize.w, this.canvasSize.h))
         }
 
-        if(this.frames % Math.floor(200 + (Math.random() * 400)) === 0) {
+        if((this.frames % 50 === 0) && (this.frames % 3 === 0)) {
             this.babies.push(new Babies(this.ctx, this.canvasSize.w, this.canvasSize.h))
         }
     },
@@ -196,10 +181,10 @@ const Game = {
     },
 
     isCollisionFB() {
-        if (this.player.posX < this.finalBoss.posX + this.finalBoss.finalBossWidth - 50 &&
+        if ((this.player.posX < this.finalBoss.posX + this.finalBoss.finalBossWidth - 50 &&
             this.player.posX + this.player.playerWidth > this.finalBoss.posX + 50 && 
             this.player.posY < this.finalBoss.posY + this.finalBoss.finalBossHeight - 70 && 
-            this.player.playerHeight + this.player.posY > this.finalBoss.posY + 30) { 
+            this.player.playerHeight + this.player.posY > this.finalBoss.posY + 30) && (this.finalBoss.finalBossLifes > 0)) { 
 
             this.player.playerLifes -= 2
 
@@ -269,10 +254,8 @@ const Game = {
     killFinalBoss() {
         if(this.finalBoss.finalBossLifes === 0) {
             this.score += 200
-            this.coins += 200
             this.martiansKilled++
-            this.finalBoss.posX = 0 - this.finalBoss.finalBossWidth
-            this.addLifes()
+            setTimeout(() => this.youWin(), 2000)
         }
     },
 
@@ -319,5 +302,28 @@ const Game = {
 
             clearInterval(this.interval)
         }
+    },
+    
+    youWin() {
+        this.ctx.drawImage(this.background.gameOverImage, 0, 10, this.canvasSize.w, this.canvasSize.h - 20)
+
+        this.ctx.fillStyle = 'black'
+        this.ctx.font = '100px Sancreek'
+        this.ctx.fillText(`YOU WIN!!`, this.canvasSize.w / 2 - 220, this.canvasSize.h / 2 - 100)
+        
+        this.ctx.font = '60px Sancreek'
+        this.ctx.fillText(`Score: ${this.score}`, this.canvasSize.w / 2 - 120, this.canvasSize.h / 2 + 10)
+        this.ctx.fillText(`Martians Killed: ${this.martiansKilled}`, this.canvasSize.w / 2 - 240, this.canvasSize.h / 2 + 100)
+        
+        this.ctx.font = '40px Sancreek'
+        this.ctx.fillText(`Press ENTER to restart the game`, this.canvasSize.w / 2 - 300, this.canvasSize.h / 2 + 200)
+
+        document.addEventListener("keydown", e => {
+            if (e.keyCode == this.keys.ENTER) {
+                location.reload()                    
+            }
+        })
+        
+        clearInterval(this.interval)
     }
 }
