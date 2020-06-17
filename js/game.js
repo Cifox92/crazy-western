@@ -7,7 +7,7 @@ const Game = {
     canvasDom: undefined,
     ctx: undefined,
     frames: 0,
-    framesFinal: 1000,
+    framesFinal: 500,
     FPS: 60,
     music: new Audio("music/la_muerte_tenia_un_precio.mp3"),
     score: 0,
@@ -52,7 +52,6 @@ const Game = {
 
         this.interval = setInterval(() => {
             this.clear()
-
             this.generateElem()
             this.drawAll()
             this.clearElem()
@@ -63,7 +62,7 @@ const Game = {
            
             this.collisionAll()
 
-            this.gameOver()            
+            this.gameOver()
             
         }, 1000 / this.FPS);
     },
@@ -85,18 +84,18 @@ const Game = {
     drawAll() {
         this.background.draw()
         this.player.draw(this.frames)
-        //this.obstacles.forEach(obs => obs.draw())
+        this.obstacles.forEach(obs => obs.draw())
         this.platforms.forEach(plat => plat.draw())
         this.babies.forEach(bab => bab.draw())
-        //this.martians.forEach(mar => mar.draw(this.frames))
+        this.martians.forEach(mar => mar.drawSelector(this.frames))
 
         this.ctx.fillStyle = 'white'
         this.ctx.font = '25px sans-serif'
-        this.ctx.fillText(`Lifes: ${this.player.playerLifes}`, this.canvasSize.w - 690, 35)
-        this.ctx.fillText(`Score: ${this.score}`, this.canvasSize.w - 545, 35)
-        this.ctx.fillText(`Coins: ${this.coins}`, this.canvasSize.w - 390, 35)
-        this.ctx.fillText(`Martians killed: ${this.martiansKilled}`, this.canvasSize.w - 240, 35)
-        this.ctx.fillText(`Bullets: ${this.player.revolverCharger}`, 35, 35)
+        this.ctx.fillText(`Lifes: ${this.player.playerLifes}`, 70, 35)
+        this.ctx.fillText(`Score: ${this.score}`, this.canvasSize.w - 200, 35)
+        this.ctx.fillText(`Coins: ${this.coins}`, this.canvasSize.w - 360, 35)
+        this.ctx.fillText(`Martians killed: ${this.martiansKilled}`, this.canvasSize.w - 610, 35)
+        this.ctx.fillText(`Bullets: ${this.player.revolverCharger}`, 200, 35)
     },
 
     collisionAll() {
@@ -167,17 +166,16 @@ const Game = {
 
     isCollisionMartian() {
         this.martians.some(mar => {
-            if (this.player.posX < mar.posX + mar.martianWidth - 50 && //colisión derecha
+            if ((this.player.posX < mar.posX + mar.martianWidth - 50 && //colisión derecha
                 this.player.posX + this.player.playerWidth > mar.posX + 50 && //colisión izda
                 this.player.posY < mar.posY + mar.martianHeight - 70 && //colision abajo
-                this.player.playerHeight + this.player.posY > mar.posY + 30) { //colision arriba
-
-                let numberOfMartian = this.martians.indexOf(mar)
-                this.martians.splice(numberOfMartian, 1)
+                this.player.playerHeight + this.player.posY > mar.posY + 30) && (mar.martianLifes > 0)) { //colision arriba
+                
+                mar.martianLifes = 0
+                this.killMartian()
                 this.player.playerLifes--
             }
         })
-
     },
 
     isCollisionFB() {
@@ -210,10 +208,10 @@ const Game = {
     hitBullet() {
         this.martians.some(mar => {
             this.player.bullets.forEach(bul => {
-                if (bul.posX + bul.bulletWidth >= mar.posX + 25 && 
+                if ((bul.posX + bul.bulletWidth >= mar.posX + 25 && 
                     bul.bulletHeight + bul.posY > mar.posY + 70 &&
                     bul.posX < mar.posX + mar.martianWidth - 25 &&
-                    bul.posY < mar.posY + mar.martianHeight) {
+                    bul.posY < mar.posY + mar.martianHeight) && mar.martianLifes > 0) {
 
                     let numberOfBullet = this.player.bullets.indexOf(bul)
                     this.player.bullets.splice(numberOfBullet, 1)
@@ -255,7 +253,7 @@ const Game = {
         if(this.finalBoss.finalBossLifes === 0) {
             this.score += 200
             this.martiansKilled++
-            setTimeout(() => this.youWin(), 2000)
+            setTimeout(() => this.youWin(), 1000)
         }
     },
 
@@ -265,8 +263,9 @@ const Game = {
                 this.score += 5
                 this.coins += 5
                 this.martiansKilled++
+
                 let numberOfMartian = this.martians.indexOf(mar)
-                this.martians.splice(numberOfMartian, 1)
+                setTimeout(() => this.martians.splice(numberOfMartian, 1), 750)
                 this.addLifes()
             }
         })
@@ -299,7 +298,6 @@ const Game = {
                     location.reload()                    
                 }
             })
-
             clearInterval(this.interval)
         }
     },
@@ -323,7 +321,6 @@ const Game = {
                 location.reload()                    
             }
         })
-        
         clearInterval(this.interval)
     }
 }

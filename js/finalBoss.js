@@ -17,7 +17,8 @@ class FinalBoss {
 
         this.lasers = []
 
-        this.sound = new Audio("music/laser.mp3")
+        this.soundShoot = new Audio("music/laser.mp3")
+        this.soundDead = new Audio("music/sounddead.mp3")
 
         this.imageWalk = new Image()
         this.imageWalk.src = "img/finalboss.png"
@@ -64,6 +65,7 @@ class FinalBoss {
         this.finalBossHeight)
     
         this.animateDead(framescounter)
+        this.soundDead.play()
     }
 
     animateWalk(framescounter) {
@@ -92,7 +94,7 @@ class FinalBoss {
     shoot(framescounter) {
         if(framescounter % 60 === 0 && this.finalBossLifes >= 1) {
             this.lasers.push(new Laser(this.ctx, this.posX, this.finalBossHeight))
-            this.sound.play()
+            this.soundShoot.play()
         }
         
     }

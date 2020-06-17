@@ -14,33 +14,62 @@ class Martian {
 
         this.martianLifes = 3
 
-        this.image = new Image()
-        this.image.src = "img/alien.png"
-        this.image.frames = 12
-        this.image.framesIndex = 0
+        this.imageWalk = new Image()
+        this.imageWalk.src = "img/alien.png"
+        this.imageWalk.frames = 12
+        this.imageWalk.framesIndex = 0
+
+        this.imageDead = new Image()
+        this.imageDead.src = "img/aliendead.png"
+        this.imageDead.frames = 12
+        this.imageDead.framesIndex = 0
     }
 
-    draw(framescounter) {
-        this.ctx.drawImage(this.image, 
-        this.image.framesIndex * Math.floor(this.image.width / this.image.frames),
+    drawSelector(framescounter) {
+        this.martianLifes <= 0 ? this.drawDead(framescounter) : this.drawWalk(framescounter)
+    }
+
+    drawWalk(framescounter) {
+        this.ctx.drawImage(this.imageWalk, 
+        this.imageWalk.framesIndex * Math.floor(this.imageWalk.width / this.imageWalk.frames),
         0,
-        Math.floor(this.image.width / this.image.frames),
-        this.image.height,
+        Math.floor(this.imageWalk.width / this.imageWalk.frames),
+        this.imageWalk.height,
         this.posX,
         this.posY,
         this.martianWidth,
         this.martianHeight)
 
-        this.animate(framescounter)
+        this.animateWalk(framescounter)
         this.move()
     }
 
-    animate(framescounter) {
+    drawDead(framescounter) {
+        this.ctx.drawImage(this.imageDead, 
+        this.imageDead.framesIndex * Math.floor(this.imageDead.width / this.imageDead.frames),
+        0,
+        Math.floor(this.imageDead.width / this.imageDead.frames),
+        this.imageDead.height,
+        this.posX,
+        this.posY,
+        this.martianWidth,
+        this.martianHeight)
+    
+        this.animateDead(framescounter)
+    }
+
+    animateWalk(framescounter) {
         if(framescounter % 5 == 0) {
-            this.image.framesIndex++
+            this.imageWalk.framesIndex++
         }
-        if(this.image.framesIndex > this.image.frames -1) {
-            this.image.framesIndex = 0
+        if(this.imageWalk.framesIndex > this.imageWalk.frames -1) {
+            this.imageWalk.framesIndex = 0
+        }
+    }
+
+    animateDead(framescounter) {
+        if(framescounter % 5 == 0) {
+            this.imageDead.framesIndex++
         }
     }
 
