@@ -5,7 +5,7 @@ class Obstacle {
         this.obstacleHeight = this.obstacleWidth
         this.posX = w
         this.posY = horsePosY1 + horseHeight -this.obstacleHeight
-        this.velX = 3
+        this.velX = 2
 
         this.image = new Image()
         this.image.src = "img/meteor.png"

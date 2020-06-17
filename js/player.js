@@ -30,7 +30,7 @@ class Player {
 
         this.bullets = []
 
-        this.playerLifes = 5
+        this.playerLifes = 20
         
         this.setListeners()
     }

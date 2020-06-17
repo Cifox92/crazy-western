@@ -17,6 +17,8 @@ class FinalBoss {
 
         this.lasers = []
 
+        this.sound = new Audio("music/laser.mp3")
+
         this.image = new Image()
         this.image.src = "img/finalboss.png"
         this.image.frames = 17
@@ -39,8 +41,6 @@ class FinalBoss {
         this.shoot(framescounter)
         this.lasers.forEach(laser => laser.draw())
         this.clearLasers()
-
-        console.log(this.lasers)
     }
 
     animate(framescounter) {
@@ -64,6 +64,7 @@ class FinalBoss {
         if(framescounter % 60 === 0) {
             this.lasers.push(new Laser(this.ctx, this.posX, this.posY, this.finalBossWidth, this.finalBossHeight))
         }
+        this.sound.play()
     }
 
     clearLasers() {

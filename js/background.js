@@ -5,6 +5,8 @@ class Background {
     this.h = h
     this.image = new Image()
     this.image.src = imgSource
+    this.gameOverImage = new Image()
+    this.gameOverImage.src = "img/BGgameover.png"
     this.posX = 0
     this.posY = 0
     this.velX = 2

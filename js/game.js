@@ -18,7 +18,7 @@ const Game = {
     babies: [],
     player: undefined,
     background: undefined,
-    finalBoss: undefined,
+    finalBoss: undefined, 
     canvasSize: {
         w: 1500,
         h: 700
@@ -27,7 +27,8 @@ const Game = {
         SPACE: 32,
         B: 66,
         LEFT: 37,
-        RIGHT: 39
+        RIGHT: 39,
+        ENTER: 13
     },
 
     init() {
@@ -35,8 +36,8 @@ const Game = {
         this.ctx = this.canvasDom.getContext("2d")
         this.setDimensions()
         this.start()
-        //this.music.loop = true
-        //this.music.play()
+        this.music.loop = true
+        this.music.play()
     },
 
     setDimensions() {
@@ -50,17 +51,17 @@ const Game = {
         this.interval = setInterval(() => {
             this.clear()
 
-            this.gameOver()
-
             this.generateElem()
             this.drawAll()
             this.clearElem()
 
             this.frames++
 
-            this.frames > 500 ? this.finalBoss.draw(this.frames) : null
+            this.frames > 1000 ? this.finalBoss.draw(this.frames) : null
            
             this.collisionAll()
+
+            this.gameOver()
             
         }, 1000 / this.FPS);
     },
@@ -82,10 +83,10 @@ const Game = {
     drawAll() {
         this.background.draw()
         this.player.draw(this.frames)
-        //this.obstacles.forEach(obs => obs.draw())
+        this.obstacles.forEach(obs => obs.draw())
         this.platforms.forEach(plat => plat.draw())
         this.babies.forEach(bab => bab.draw())
-        //this.martians.forEach(mar => mar.draw(this.frames))
+        this.martians.forEach(mar => mar.draw(this.frames))
 
         this.ctx.fillStyle = 'white'
         this.ctx.font = '25px sans-serif'
@@ -109,7 +110,7 @@ const Game = {
     },
 
     generateElem() {
-        if((this.frames % Math.floor(200 + (Math.random() * 400)) === 0) && (this.frames < 500)) {
+        /*if((this.frames % Math.floor(200 + (Math.random() * 400)) === 0) && (this.frames < 1000)) {
             this.obstacles.push(new Obstacle(this.ctx, this.canvasSize.w, this.player.posY1, this.player.playerHeight))
         }
 
@@ -117,7 +118,25 @@ const Game = {
             this.platforms.push(new Platforms(this.ctx, this.canvasSize.w))
         }
 
-        if((this.frames % Math.floor(200 + (Math.random() * 400)) === 0) && (this.frames < 500)) {
+        if((this.frames % Math.floor(200 + (Math.random() * 400)) === 0) && (this.frames < 1000)) {
+            this.martians.push(new Martian(this.ctx, this.canvasSize.w, this.canvasSize.h))
+        }
+
+        if(this.frames % Math.floor(200 + (Math.random() * 400)) === 0) {
+            this.babies.push(new Babies(this.ctx, this.canvasSize.w, this.canvasSize.h))
+        }*/
+
+        let random = Math.floor((Math.random() * 600) + 200)
+
+        if((this.frames % 100 === 0) && (this.frames % random === 0) && (this.frames < 1000)) {
+            this.obstacles.push(new Obstacle(this.ctx, this.canvasSize.w, this.player.posY1, this.player.playerHeight))
+        }
+
+        if(this.frames % 300 === 0) {
+            this.platforms.push(new Platforms(this.ctx, this.canvasSize.w))
+        }
+
+        if((this.frames % 75 === 0) && (this.frames % 2 === 0)&& (this.frames < 1000)) {
             this.martians.push(new Martian(this.ctx, this.canvasSize.w, this.canvasSize.h))
         }
 
@@ -135,7 +154,7 @@ const Game = {
 
     isCollisionObs() {
         this.obstacles.some(obs => {
-            if (this.player.posX < obs.posX + obs.obstacleWidth -50 && //colisión derecha
+            if (this.player.posX < obs.posX + obs.obstacleWidth - 50 && //colisión derecha
                 this.player.posX + this.player.playerWidth > obs.posX + 50 && //colisión izda
                 this.player.posY < obs.posY + obs.obstacleHeight && //colision abajo
                 this.player.playerHeight + this.player.posY > obs.posY + 70) { //colision arriba
@@ -190,9 +209,9 @@ const Game = {
 
     isCollisionPlatform() {
         this.platforms.some(plat => {
-            if(this.player.posX < plat.posX + plat.platformWidth -50 && //colisión derecha
-                this.player.posX + this.player.playerWidth > plat.posX && //colisión izda
-                this.player.posY < plat.posY + plat.platformHeight -50 && //colision abajo
+            if(this.player.posX < plat.posX + plat.platformWidth - 50 && //colisión derecha
+                this.player.posX + this.player.playerWidth > plat.posX + 50 && //colisión izda
+                this.player.posY < plat.posY + plat.platformHeight - 50 && //colision abajo
                 this.player.playerHeight + this.player.posY > plat.posY + 20) {
 
                 this.player.posY0 = plat.posY - this.player.playerHeight + 10
@@ -233,6 +252,18 @@ const Game = {
                 this.killFinalBoss()
             }
         })
+
+        this.finalBoss.lasers.some(las => {
+            if (las.posX + las.laserWidth >= this.player.posX + 25 && 
+                las.laserHeight + las.posY > this.player.posY + 70 &&
+                las.posX < this.player.posX + this.player.playerWidth - 25 &&
+                las.posY < this.player.posY + this.player.playerHeight) {
+
+                let numberOfLaser = this.finalBoss.lasers.indexOf(las)
+                this.finalBoss.lasers.splice(numberOfLaser, 1)
+                this.player.playerLifes--
+            }
+        })
     },
 
     killFinalBoss() {
@@ -267,7 +298,26 @@ const Game = {
 
     gameOver() {
         if(this.player.playerLifes <= 0) {
+            this.ctx.drawImage(this.background.gameOverImage, 0, 10, this.canvasSize.w, this.canvasSize.h - 20)
+
+            this.ctx.fillStyle = 'black'
+            this.ctx.font = '100px Sancreek'
+            this.ctx.fillText(`Game Over`, this.canvasSize.w / 2 - 240, this.canvasSize.h / 2 - 100)
+            
+            this.ctx.font = '60px Sancreek'
+            this.ctx.fillText(`Score: ${this.score}`, this.canvasSize.w / 2 - 120, this.canvasSize.h / 2 + 10)
+            this.ctx.fillText(`Martians Killed: ${this.martiansKilled}`, this.canvasSize.w / 2 - 240, this.canvasSize.h / 2 + 100)
+            
+            this.ctx.font = '40px Sancreek'
+            this.ctx.fillText(`Press ENTER to restart the game`, this.canvasSize.w / 2 - 300, this.canvasSize.h / 2 + 200)
+
+            document.addEventListener("keydown", e => {
+                if (e.keyCode == this.keys.ENTER) {
+                    location.reload()                    
+                }
+            })
+
             clearInterval(this.interval)
         }
-    },
+    }
 }
