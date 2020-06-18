@@ -8,7 +8,7 @@ body {
     flex-direction: column;
     align-items: center;
     overflow: hidden;
-    background-image: url("/img/prueba1.jpg");
+    background-image: url("../img/prueba1.jpg");
     background-repeat: no-repeat;
     background-size: cover;
     font-family: 'Sancreek', cursive;
