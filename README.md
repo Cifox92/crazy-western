@@ -33,7 +33,7 @@ Every enemy you kill and every baby you save gives you score! Which is equivalen
 This is our first project as Ironhackers! Any feedback will be really appreciated.
 
 ## License
-Background is taken from [ShutterStock](https://shutterstock.com/es/home)
+Background is taken from [ShutterStock](https://shutterstock.com/es/home).
 Sprites of enemies and player are taken from free opensources.
 
 ## Authors
