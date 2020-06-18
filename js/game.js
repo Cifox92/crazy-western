@@ -39,8 +39,8 @@ const Game = {
         this.ctx = this.canvasDom.getContext("2d")
         this.setDimensions()
         this.start()
-        //this.music.loop = true
-        //this.music.play()
+        this.music.loop = true
+        this.music.play()
     },
 
     setDimensions() {
@@ -56,8 +56,6 @@ const Game = {
             this.generateElem()
             this.drawAll()
             this.clearElem()
-
-            console.log(this.alien)
 
             this.frames++
 
