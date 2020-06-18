@@ -7,7 +7,7 @@ const Game = {
     canvasDom: undefined,
     ctx: undefined,
     frames: 0,
-    framesFinal: 500,
+    framesFinal: 2000,
     FPS: 60,
     music: new Audio("music/la_muerte_tenia_un_precio.mp3"),
     score: 0,
@@ -15,6 +15,7 @@ const Game = {
     martiansKilled: 0,
     obstacles: [],
     martians: [],
+    alien: [],
     platforms: [],
     babies: [],
     player: undefined,
@@ -38,8 +39,8 @@ const Game = {
         this.ctx = this.canvasDom.getContext("2d")
         this.setDimensions()
         this.start()
-        this.music.loop = true
-        this.music.play()
+        //this.music.loop = true
+        //this.music.play()
     },
 
     setDimensions() {
@@ -56,13 +57,15 @@ const Game = {
             this.drawAll()
             this.clearElem()
 
+            console.log(this.alien)
+
             this.frames++
 
             this.frames > this.framesFinal ? this.finalBoss.drawSelector(this.frames) : null
-           
+
             this.collisionAll()
 
-            this.gameOver()
+            this.player.playerLifes < 1 ? this.finishGame() : null
             
         }, 1000 / this.FPS);
     },
@@ -73,7 +76,8 @@ const Game = {
         this.finalBoss = new FinalBoss(this.ctx, this.canvasSize.w, this.canvasSize.h)
         this.obstacles = []
         this.platforms = []
-        this.martians= []
+        this.martians = []
+        this.alien = []
         this.babies = []
         this.frames = 0
         this.score = 0
@@ -83,11 +87,12 @@ const Game = {
 
     drawAll() {
         this.background.draw()
-        this.player.draw(this.frames)
+        this.player.drawSelector(this.frames)
         this.obstacles.forEach(obs => obs.draw())
         this.platforms.forEach(plat => plat.draw())
         this.babies.forEach(bab => bab.draw())
         this.martians.forEach(mar => mar.drawSelector(this.frames))
+        this.alien.forEach(ali => ali.drawSelector(this.frames))
 
         this.ctx.fillStyle = 'white'
         this.ctx.font = '25px sans-serif'
@@ -102,7 +107,7 @@ const Game = {
         this.isCollisionObs()
         this.isCollisionPlatform()
         this.isCollisionBaby()
-        this.isCollisionMartian()
+        this.isCollisionEnemy()
         this.isCollisionFB()
         this.hitBullet()
     },
@@ -121,7 +126,7 @@ const Game = {
         }
 
         if((this.frames % 50 === 0) && (this.frames % 3 === 0) && (this.frames < this.framesFinal)) {
-            this.martians.push(new Martian(this.ctx, this.canvasSize.w, this.canvasSize.h))
+            this.generateEnemies()
         }
 
         if((this.frames % 50 === 0) && (this.frames % 3 === 0)) {
@@ -129,9 +134,20 @@ const Game = {
         }
     },
 
+    generateEnemies() {
+        let random = Math.floor(Math.random() * (11 - 1) + 1)
+
+        if(random >= 1 && random <= 7) {
+            this.martians.push(new Martian(this.ctx, this.canvasSize.w, this.canvasSize.h))
+        } else {
+            this.alien.push(new Alien(this.ctx, this.canvasSize.w, this.canvasSize.h))
+        }
+    },
+
     clearElem() {
         this.obstacles = this.obstacles.filter(obs => obs.posX >= - obs.obstacleWidth)
         this.martians = this.martians.filter(mar => mar.posX >= - mar.martianWidth)
+        this.alien = this.alien.filter(ali => ali.posX >= - ali.alienWidth)
         this.platforms = this.platforms.filter(plat => plat.posX >= - plat.platformWidth)
         this.babies = this.babies.filter(bab => bab.posY < this.player.posY1 + bab.babyHeight + 20)
     },
@@ -164,7 +180,7 @@ const Game = {
         })
     },
 
-    isCollisionMartian() {
+    isCollisionEnemy() {
         this.martians.some(mar => {
             if ((this.player.posX < mar.posX + mar.martianWidth - 50 && //colisión derecha
                 this.player.posX + this.player.playerWidth > mar.posX + 50 && //colisión izda
@@ -172,8 +188,22 @@ const Game = {
                 this.player.playerHeight + this.player.posY > mar.posY + 30) && (mar.martianLifes > 0)) { //colision arriba
                 
                 mar.martianLifes = 0
-                this.killMartian()
+                this.killEnemy()
                 this.player.playerLifes--
+                this.damagePlayer()
+            }
+        })
+
+        this.alien.some(ali => {
+            if ((this.player.posX < ali.posX + ali.alienWidth - 50 && //colisión derecha
+                this.player.posX + this.player.playerWidth > ali.posX + 50 && //colisión izda
+                this.player.posY < ali.posY + ali.alienHeight - 70 && //colision abajo
+                this.player.playerHeight + this.player.posY > ali.posY + 30) && (ali.alienLifes > 0)) { //colision arriba
+                
+                ali.alienLifes = 0
+                this.killEnemy()
+                this.player.playerLifes--
+                this.damagePlayer()
             }
         })
     },
@@ -187,6 +217,7 @@ const Game = {
             this.player.playerLifes -= 2
 
             this.finalBoss.velX = this.finalBoss.reloadVel
+            this.damagePlayer()
         }
     },
 
@@ -217,7 +248,23 @@ const Game = {
                     this.player.bullets.splice(numberOfBullet, 1)
                     mar.martianLifes--
                     
-                    this.killMartian()
+                    this.killEnemy()
+                }
+            })
+        })
+
+        this.alien.some(ali => {
+            this.player.bullets.forEach(bul => {
+                if ((bul.posX + bul.bulletWidth >= ali.posX + 25 && 
+                    bul.bulletHeight + bul.posY > ali.posY + 70 &&
+                    bul.posX < ali.posX + ali.alienWidth - 25 &&
+                    bul.posY < ali.posY + ali.alienHeight) && ali.alienLifes > 0) {
+
+                    let numberOfBullet = this.player.bullets.indexOf(bul)
+                    this.player.bullets.splice(numberOfBullet, 1)
+                    ali.alienLifes--
+                    
+                    this.killEnemy()
                 }
             })
         })
@@ -245,19 +292,28 @@ const Game = {
                 let numberOfLaser = this.finalBoss.lasers.indexOf(las)
                 this.finalBoss.lasers.splice(numberOfLaser, 1)
                 this.player.playerLifes--
+                this.damagePlayer()
+
             }
         })
+    },
+
+    damagePlayer() {
+        this.player.isDamage = true
+        setTimeout(()=>{
+            this.player.isDamage = false
+        }, 2000)
     },
 
     killFinalBoss() {
         if(this.finalBoss.finalBossLifes === 0) {
             this.score += 200
             this.martiansKilled++
-            setTimeout(() => this.youWin(), 1000)
+            setTimeout(() => this.finishGame(), 4000)
         }
     },
 
-    killMartian() {
+    killEnemy() {
         this.martians.forEach(mar => {
             if(mar.martianLifes === 0) {
                 this.score += 5
@@ -269,6 +325,18 @@ const Game = {
                 this.addLifes()
             }
         })
+
+        this.alien.forEach(ali => {
+            if(ali.alienLifes === 0) {
+                this.score += 10
+                this.coins += 10
+                this.martiansKilled++
+
+                let numberOfAlien = this.alien.indexOf(ali)
+                setTimeout(() => this.alien.splice(numberOfAlien, 1), 750)
+                this.addLifes()
+            }
+        })
     },
 
     addLifes() {
@@ -277,37 +345,18 @@ const Game = {
             this.player.playerLifes++
         }
     },
-
-    gameOver() {
-        if(this.player.playerLifes <= 0) {
-            this.ctx.drawImage(this.background.gameOverImage, 0, 10, this.canvasSize.w, this.canvasSize.h - 20)
-
-            this.ctx.fillStyle = 'black'
-            this.ctx.font = '100px Sancreek'
-            this.ctx.fillText(`Game Over`, this.canvasSize.w / 2 - 240, this.canvasSize.h / 2 - 100)
-            
-            this.ctx.font = '60px Sancreek'
-            this.ctx.fillText(`Score: ${this.score}`, this.canvasSize.w / 2 - 120, this.canvasSize.h / 2 + 10)
-            this.ctx.fillText(`Martians Killed: ${this.martiansKilled}`, this.canvasSize.w / 2 - 240, this.canvasSize.h / 2 + 100)
-            
-            this.ctx.font = '40px Sancreek'
-            this.ctx.fillText(`Press ENTER to restart the game`, this.canvasSize.w / 2 - 300, this.canvasSize.h / 2 + 200)
-
-            document.addEventListener("keydown", e => {
-                if (e.keyCode == this.keys.ENTER) {
-                    location.reload()                    
-                }
-            })
-            clearInterval(this.interval)
-        }
-    },
     
-    youWin() {
+    finishGame() {
         this.ctx.drawImage(this.background.gameOverImage, 0, 10, this.canvasSize.w, this.canvasSize.h - 20)
-
+        
         this.ctx.fillStyle = 'black'
         this.ctx.font = '100px Sancreek'
-        this.ctx.fillText(`YOU WIN!!`, this.canvasSize.w / 2 - 220, this.canvasSize.h / 2 - 100)
+        
+        if(this.player.playerLifes > 0) {
+            this.ctx.fillText(`YOU WIN!!`, this.canvasSize.w / 2 - 220, this.canvasSize.h / 2 - 100)
+        } else {
+            this.ctx.fillText(`Game Over`, this.canvasSize.w / 2 - 240, this.canvasSize.h / 2 - 100)
+        }
         
         this.ctx.font = '60px Sancreek'
         this.ctx.fillText(`Score: ${this.score}`, this.canvasSize.w / 2 - 120, this.canvasSize.h / 2 + 10)

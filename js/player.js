@@ -10,10 +10,17 @@ class Player {
         this.playerWidth = 150
         this.playerHeight = 175
 
-        this.image = new Image()
-        this.image.src = "img/player.png"
-        this.image.frames = 14
-        this.image.framesIndex = 0
+        this.imageWalk = new Image()
+        this.imageWalk.src = "img/player.png"
+        this.imageWalk.frames = 14
+        this.imageWalk.framesIndex = 0
+
+        this.imageDamage = new Image()
+        this.imageDamage.src = "img/playerdmg.png"
+        this.imageDamage.frames = 14
+        this.imageDamage.framesIndex = 0
+
+        this.isDamage = false
 
         this.soundShoot = new Audio("music/shoot2.mp3")
         this.soundReload = new Audio("music/reload.mp3")
@@ -37,29 +44,59 @@ class Player {
         this.setListeners()
     }
 
-    draw(framescounter) {
-        this.ctx.drawImage(this.image, 
-        this.image.framesIndex * Math.floor(this.image.width / this.image.frames),
+    drawSelector(framescounter) {
+        this.isDamage === true ? this.drawDamage(framescounter) : this.drawWalk(framescounter)
+    }
+
+    drawWalk(framescounter) {
+        this.ctx.drawImage(this.imageWalk, 
+        this.imageWalk.framesIndex * Math.floor(this.imageWalk.width / this.imageWalk.frames),
         0,
-        Math.floor(this.image.width / this.image.frames),
-        this.image.height,
+        Math.floor(this.imageWalk.width / this.imageWalk.frames),
+        this.imageWalk.height,
         this.posX, 
         this.posY, 
         this.playerWidth, 
         this.playerHeight)
 
-        this.animate(framescounter)
+        this.animateWalk(framescounter)
         this.bullets.forEach(bullet => bullet.draw())
         this.clearBullets()
         this.move()
     }
 
-    animate(framescounter) {
+    drawDamage(framescounter) {
+        this.ctx.drawImage(this.imageDamage, 
+        this.imageDamage.framesIndex * Math.floor(this.imageDamage.width / this.imageDamage.frames),
+        0,
+        Math.floor(this.imageDamage.width / this.imageDamage.frames),
+        this.imageDamage.height,
+        this.posX, 
+        this.posY, 
+        this.playerWidth, 
+        this.playerHeight)
+
+        this.animateDamage(framescounter)
+        this.bullets.forEach(bullet => bullet.draw())
+        this.clearBullets()
+        this.move()
+    }
+
+    animateWalk(framescounter) {
         if(framescounter % 5 == 0) {
-            this.image.framesIndex++
+            this.imageWalk.framesIndex++
         }
-        if(this.image.framesIndex > this.image.frames -1) {
-            this.image.framesIndex = 0
+        if(this.imageWalk.framesIndex > this.imageWalk.frames -1) {
+            this.imageWalk.framesIndex = 0
+        }
+    }
+
+    animateDamage(framescounter) {
+        if(framescounter % 5 == 0) {
+            this.imageDamage.framesIndex++
+        }
+        if(this.imageDamage.framesIndex > this.imageDamage.frames -1) {
+            this.imageDamage.framesIndex = 0
         }
     }
 

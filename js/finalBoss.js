@@ -1,7 +1,7 @@
 class FinalBoss {
     constructor(ctx, w, h) {
         this.ctx = ctx
-        this. canvasSize = {
+        this.canvasSize = {
             w: w,
             h: h
         }
@@ -13,7 +13,7 @@ class FinalBoss {
         this.reloadVel = -10
         this.velX = 4
         
-        this.finalBossLifes = 20
+        this.finalBossLifes = 35
 
         this.lasers = []
 
@@ -66,13 +66,14 @@ class FinalBoss {
     
         this.animateDead(framescounter)
         this.soundDead.play()
+        this.move()
     }
 
     animateWalk(framescounter) {
         if(framescounter % 5 == 0) {
             this.imageWalk.framesIndex++
         }
-        if(this.imageWalk.framesIndex > this.imageWalk.frames -1) {
+        if(this.imageWalk.framesIndex > this.imageWalk.frames - 1) {
             this.imageWalk.framesIndex = 0
         }
     }
@@ -81,6 +82,9 @@ class FinalBoss {
         if(framescounter % 5 == 0) {
             this.imageDead.framesIndex++
         }
+        if(this.imageDead.framesIndex == 13) {
+            this.imageDead.framesIndex--
+        }
     }
 
     move() {
@@ -88,6 +92,9 @@ class FinalBoss {
 
         if(this.posX > 1500 - this.finalBossWidth){
             this.velX = 5
+        }
+        if(this.finalBossLifes === 0) {
+            this.velX = 2
         }
     }
 

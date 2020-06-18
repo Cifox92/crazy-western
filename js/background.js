@@ -29,5 +29,3 @@ class Background {
     this.posX -= this.velX
   }
 }
-
-

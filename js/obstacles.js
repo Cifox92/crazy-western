@@ -4,7 +4,7 @@ class Obstacle {
         this.obstacleWidth = 100 + Math.random() * 100
         this.obstacleHeight = this.obstacleWidth
         this.posX = w
-        this.posY = horsePosY1 + horseHeight -this.obstacleHeight
+        this.posY = horsePosY1 + horseHeight - this.obstacleHeight
         this.velX = 2
 
         this.image = new Image()
