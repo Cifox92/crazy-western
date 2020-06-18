@@ -186,7 +186,7 @@ const Game = {
                 this.player.playerHeight + this.player.posY > mar.posY + 30) && (mar.martianLifes > 0)) { //colision arriba
                 
                 mar.martianLifes = 0
-                this.killEnemy()
+                this.killMartian(mar)
                 this.player.playerLifes--
                 this.damagePlayer()
             }
@@ -199,7 +199,7 @@ const Game = {
                 this.player.playerHeight + this.player.posY > ali.posY + 30) && (ali.alienLifes > 0)) { //colision arriba
                 
                 ali.alienLifes = 0
-                this.killEnemy()
+                this.killAlien(ali)
                 this.player.playerLifes--
                 this.damagePlayer()
             }
@@ -246,7 +246,7 @@ const Game = {
                     this.player.bullets.splice(numberOfBullet, 1)
                     mar.martianLifes--
                     
-                    this.killEnemy()
+                    this.killMartian(mar)
                 }
             })
         })
@@ -262,7 +262,7 @@ const Game = {
                     this.player.bullets.splice(numberOfBullet, 1)
                     ali.alienLifes--
                     
-                    this.killEnemy()
+                    this.killAlien(ali)
                 }
             })
         })
@@ -311,30 +311,28 @@ const Game = {
         }
     },
 
-    killEnemy() {
-        this.martians.forEach(mar => {
-            if(mar.martianLifes === 0) {
-                this.score += 5
-                this.coins += 5
-                this.martiansKilled++
+    killMartian(mar) {
+        if(mar.martianLifes === 0) {
+            this.score += 5
+            this.coins += 5
+            this.martiansKilled++
 
-                let numberOfMartian = this.martians.indexOf(mar)
-                setTimeout(() => this.martians.splice(numberOfMartian, 1), 750)
-                this.addLifes()
-            }
-        })
+            let numberOfMartian = this.martians.indexOf(mar)
+            setTimeout(() => this.martians.splice(numberOfMartian, 1), 750)
+            this.addLifes()
+        }
+    },
+    
+    killAlien(ali) {
+        if(ali.alienLifes === 0) {
+            this.score += 10
+            this.coins += 10
+            this.martiansKilled++
 
-        this.alien.forEach(ali => {
-            if(ali.alienLifes === 0) {
-                this.score += 10
-                this.coins += 10
-                this.martiansKilled++
-
-                let numberOfAlien = this.alien.indexOf(ali)
-                setTimeout(() => this.alien.splice(numberOfAlien, 1), 750)
-                this.addLifes()
-            }
-        })
+            let numberOfAlien = this.alien.indexOf(ali)
+            setTimeout(() => this.alien.splice(numberOfAlien, 1), 750)
+            this.addLifes()
+        }
     },
 
     addLifes() {
