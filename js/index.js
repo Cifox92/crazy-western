@@ -14,10 +14,8 @@ window.onload = () => {
 
     document.getElementById("hard").onclick = () => {
         Game.init()
-        Game.player.playerLifes = 8
+        Game.player.playerLifes = 5
         Game.framesFinal = 10000
-        Game.alien.alienLifes = 3
-        Game.martians.martianLifes = 5
         Game.finalBoss.finalBossLifes = 40
         startGame()
     }
