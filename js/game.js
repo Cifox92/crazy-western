@@ -57,9 +57,6 @@ const Game = {
             this.drawAll()
             this.clearElem()
 
-            console.log(this.martians)
-            console.log(this.alien)
-
             this.frames++
 
             this.frames > this.framesFinal ? this.finalBoss.drawSelector(this.frames) : null
